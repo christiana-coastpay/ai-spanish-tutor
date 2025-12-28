@@ -1,25 +1,3 @@
-// "use server";
-
-// import OpenAI from "openai";
-
-// export async function getSessionToken() {
-//   try {
-//     const openai = new OpenAI({
-//       apiKey: process.env.OPENAI_API_KEY,
-//     });
-
-//     const session = await openai.beta.realtime.sessions.create({
-//       model: "gpt-realtime-mini-2025-12-15",
-//     });
-
-//     console.log("Session created:", session); // Add this
-//     return session.client_secret.value;
-//   } catch (error) {
-//     console.error("Error creating session:", error);
-//     throw error;
-//   }
-// }
-
 "use server";
 
 export async function getSessionToken() {
