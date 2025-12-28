@@ -1,8 +1,11 @@
 {
   "private": true,
   "scripts": {
-    "start:01": "npm run start --prefix 01-basic",
-    "start:02": "npm run dev --prefix 02-voice",
-    "install": "npm install --prefix 01-basic && npm install --prefix 02-voice"
+    "dev": "npm run dev --prefix ai-spanish-tutor",
+    "start": "npm run dev --prefix ai-spanish-tutor",
+    "install": "npm install --prefix ai-spanish-tutor"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
   }
 }

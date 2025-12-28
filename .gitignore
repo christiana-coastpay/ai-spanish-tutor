@@ -136,4 +136,4 @@ dist
 .pnp.*
 
 .npmrc
-package-lock.json
+package-lock.json.env
