@@ -26,7 +26,7 @@ const spanishTeacherAgent = new RealtimeAgent({
 
 const agent = new RealtimeAgent({
   name: "Voice Agent",
-  instructions: "You are a helpful assistant. Hand off to María the Spanish Teacher for language learning.",
+  instructions: "You are a helpful assistant. Hand off to Miguel the Spanish Teacher for language learning.",
   handoffs: [spanishTeacherAgent],
 });
 
@@ -123,7 +123,7 @@ export default function Home() {
                         }`}
                       >
                         <div className="text-xs font-semibold mb-1 opacity-70">
-                          {item.role === "user" ? "You" : "María"}
+                          {item.role === "user" ? "You" : "Miguel"}
                         </div>
                         <div className="text-base leading-relaxed">
                           {transcript}
