@@ -55,14 +55,18 @@ export default function Home() {
   }
 
   const getTranscript = (item: RealtimeItem) => {
-    if (item.type === "message" && Array.isArray(item.content)) {
-      const audioContent = item.content.find(
-        (c: any) => c.type === "input_audio" || c.type === "output_audio"
-      );
-      return audioContent?.transcript || "";
+  if (item.type === "message" && Array.isArray(item.content)) {
+    const audioContent = item.content.find(
+      (c: any) => c.type === "input_audio" || c.type === "output_audio"
+    );
+    
+    // Check if audioContent exists AND has the transcript property
+    if (audioContent && 'transcript' in audioContent) {
+      return audioContent.transcript || "";
     }
-    return "";
-  };
+  }
+  return "";
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
