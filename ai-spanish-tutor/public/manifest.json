@@ -1,0 +1,8 @@
+{
+  "name": "AI Spanish Tutor",
+  "short_name": "Spanish Tutor",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+}
