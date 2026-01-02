@@ -59,12 +59,14 @@ const agent = new RealtimeAgent({
 });
 
 interface NewsArticle {
+  id: number;
   title: string;
   description: string;
   content: string;
   url: string;
   source: string;
   publishedAt: string;
+  country: string;
 }
 
 type Mode = "select" | "conversation" | "news";
@@ -81,56 +83,13 @@ export default function Home() {
   async function fetchSpanishNews() {
     setLoading(true);
     try {
-      // TODO: Replace with real API call to '/api/spanish-news' when ready
-      // const response = await fetch('/api/spanish-news');
-      // const data = await response.json();
+      // Call your server-side API route
+      const response = await fetch('/api/spanish-news');
+      const data = await response.json();
       
-      // Mock data for now
-      await new Promise(resolve => setTimeout(resolve, 800)); // Simulate loading
-      const mockArticles = [
-        {
-          title: "México celebra el Día de los Muertos con festivales tradicionales",
-          description: "Miles de personas participan en festivales coloridos para honrar a sus seres queridos fallecidos.",
-          content: "El Día de los Muertos es una de las festividades más importantes de México. Esta celebración única combina tradiciones indígenas con elementos católicos. Las familias construyen altares decorados con flores de cempasúchil, velas, fotografías y comida favorita de sus difuntos. En todo el país, los cementerios se llenan de vida con música, flores y reuniones familiares.",
-          url: "https://example.com/dia-de-muertos",
-          source: "El Universal",
-          publishedAt: new Date().toISOString()
-        },
-        {
-          title: "La Ciudad de México inaugura nueva línea del metro",
-          description: "La línea 13 conectará el norte y sur de la ciudad, beneficiando a millones de pasajeros.",
-          content: "El gobierno de la Ciudad de México inauguró la nueva línea del metro que conecta importantes zonas de la capital. Esta línea moderna cuenta con tecnología de punta y estaciones accesibles. Se espera que reduzca significativamente los tiempos de traslado para los ciudadanos. El proyecto representa una inversión importante en transporte público.",
-          url: "https://example.com/metro-cdmx",
-          source: "Milenio",
-          publishedAt: new Date().toISOString()
-        },
-        {
-          title: "Tacos al pastor: el platillo mexicano conquista el mundo",
-          description: "Restaurantes internacionales adoptan esta delicia culinaria mexicana en sus menús.",
-          content: "Los tacos al pastor se han convertido en un fenómeno global. Este platillo originario de Puebla combina carne de cerdo marinada con especias y chiles, cocinada en un trompo vertical. La receta fue inspirada por la llegada de inmigrantes libaneses a México. Hoy en día, se pueden encontrar versiones de estos tacos en ciudades de todo el mundo.",
-          url: "https://example.com/tacos-pastor",
-          source: "Reforma",
-          publishedAt: new Date().toISOString()
-        },
-        {
-          title: "Científicos mexicanos desarrollan nueva tecnología solar",
-          description: "Un equipo de la UNAM crea paneles solares más eficientes y económicos.",
-          content: "Investigadores de la Universidad Nacional Autónoma de México han desarrollado una innovación importante en energía solar. Los nuevos paneles utilizan materiales más accesibles y son más eficientes que los modelos tradicionales. Este avance podría hacer la energía solar más accesible para comunidades rurales. El proyecto ha recibido reconocimiento internacional.",
-          url: "https://example.com/energia-solar",
-          source: "La Jornada",
-          publishedAt: new Date().toISOString()
-        },
-        {
-          title: "El fútbol mexicano prepara el torneo de clausura",
-          description: "Los equipos se preparan para una temporada emocionante con nuevos fichajes y estrategias.",
-          content: "La Liga MX se prepara para iniciar el torneo de clausura con grandes expectativas. Varios equipos han incorporado jugadores internacionales de renombre. Los aficionados esperan partidos emocionantes y una competencia reñida por el campeonato. El fútbol sigue siendo la pasión nacional de México.",
-          url: "https://example.com/futbol-clausura",
-          source: "ESPN Deportes",
-          publishedAt: new Date().toISOString()
-        }
-      ];
-      
-      setArticles(mockArticles);
+      if (data.articles) {
+        setArticles(data.articles);
+      }
     } catch (error) {
       console.error("Error fetching news:", error);
     }
@@ -155,7 +114,7 @@ export default function Home() {
     setConnected(true);
   }
 
-  async function startNewsSession(article: NewsArticle) {
+    async function startNewsSession(article: NewsArticle) {
     setSelectedArticle(article);
     
     const token = await getSessionToken();
@@ -173,7 +132,17 @@ export default function Home() {
     });
     
     setConnected(true);
-  }
+    
+    // Fetch full article content by ID
+    fetch(`/api/retrieve-article?id=${article.id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.content) {
+          setSelectedArticle(prev => prev ? { ...prev, content: data.content } : null);
+        }
+      })
+      .catch(err => console.error('Failed to fetch full article:', err));
+  } 
 
   async function endSession() {
     setConnected(false);
@@ -317,13 +286,13 @@ export default function Home() {
             </button>
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center justify-between">
-                Noticias de México
+                Noticias en Español
                 <button
                   onClick={fetchSpanishNews}
                   disabled={loading}
                   className="text-sm px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
                 >
-                  {loading ? "Loading..." : "Refresh"}
+                  {loading ? "Cargando..." : "Refresh"}
                 </button>
               </h2>
               
@@ -341,9 +310,16 @@ export default function Home() {
                       className="border border-gray-200 rounded-lg p-4 hover:border-orange-500 transition-all cursor-pointer hover:shadow-md"
                       onClick={() => startNewsSession(article)}
                     >
-                      <h3 className="font-semibold text-lg mb-2 text-gray-800">
-                        {article.title}
-                      </h3>
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="font-semibold text-lg text-gray-800 flex-1">
+                          {article.title}
+                        </h3>
+                        <span className="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-700 whitespace-nowrap">
+                          {article.country === 'mx' && '🇲🇽 México'}
+                          {article.country === 'ar' && '🇦🇷 Argentina'}
+                          {article.country === 'co' && '🇨🇴 Colombia'}
+                        </span>
+                      </div>
                       <p className="text-gray-600 text-sm mb-2">
                         {article.description}
                       </p>
